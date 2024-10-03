@@ -1,0 +1,49 @@
+import requests
+import folium
+
+
+# Function to get geolocation details using IP address
+def get_geolocation():
+    # You can use a free IP geolocation service such as ipinfo.io
+    response = requests.get('https://ipinfo.io/')
+    data = response.json()
+
+    # Extract latitude and longitude from the response
+    location = data['loc'].split(',')
+    latitude = float(location[0])
+    longitude = float(location[1])
+
+    return latitude, longitude, data
+
+
+# Function to display the location on a map
+def display_map(latitude, longitude):
+    # Create a map object centered at the geolocation
+    map_object = folium.Map(location=[latitude, longitude], zoom_start=12)
+
+    # Add a marker for the geolocation
+    folium.Marker([latitude, longitude], popup="You are here").add_to(map_object)
+
+    # Save the map to an HTML file
+    map_object.save("user_location_map.html")
+    print("Map saved as user_location_map.html")
+
+
+# Main program
+if __name__ == "__main__":
+    try:
+        # Fetch the geolocation
+        latitude, longitude, data = get_geolocation()
+
+        # Print user location details
+        print(f"IP Address: {data['ip']}")
+        print(f"City: {data['city']}")
+        print(f"Region: {data['region']}")
+        print(f"Country: {data['country']}")
+        print(f"Latitude: {latitude}, Longitude: {longitude}")
+
+        # Display the location on a map
+        display_map(latitude, longitude)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
